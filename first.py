@@ -27,16 +27,11 @@ def Zero_Shot_CloneTTS(voice, language, text):
 
 
 
-@app.get("/set_language/{language}/{username}")
-async def set_language(language: str, username: str):
-    # Check if the language is supported
-    if language not in ["en", "fr-fr"]:
-        return {"error": f"Unsupported language: {language}"}
-
-    # Implement your logic to set the language for the user here
-    voice_samples[username] = language
-
-    return {"message": f"Language set to {language} for user {username}"}
+@app.get("/set_language/{lang}/{username}")
+async def set_language(lang: str, username: str):
+    user_settings[username] = user_settings.get(username, {})
+    user_settings[username][‘language’] = lang
+    return {“message”: f”Language set to {lang}“}
 
 
 @app.post("/set_sample/{username}")
@@ -54,6 +49,11 @@ async def set_sample(username: str, audio_file: UploadFile = File(...)):
 
 @app.get("/tts")
 async def generate_tts(text: str, username: str):
+
+    language = settings.get(‘language’)
+    if language is None:
+        return {“error”: “Language is not set. Please set the language using /set_language/{lang}“}
+    
     # Check if voice sample exists for the given username
     if username not in voice_samples:
         return {"error": f"No voice sample found for user {username}"}
@@ -62,22 +62,11 @@ async def generate_tts(text: str, username: str):
     voice_sample_path = voice_samples[username]
 
     cloned_audio_path = f"/home/ubuntu/{username}.wav"
-    language = voice_samples[username]  # Retrieve the language from voice_samples
-
-    if language == "en":
-        language_code = "en"
-    elif language == "fr-fr":
-        language_code = "fr-fr"
-    else:
-        return {"error": f"Unsupported language: {language}"}
-
-    Zero_Shot_CloneTTS(voice_sample_path, language=language_code, text=text)
+    Zero_Shot_CloneTTS(voice_sample_path, language=language, text=text)
     shutil.move("output.wav", cloned_audio_path)
 
     # Return the cloned audio file as a response
     return FileResponse(cloned_audio_path, media_type="audio/wav")
-
-
 
 
 if __name__ == "__main__":
