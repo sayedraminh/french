@@ -31,7 +31,7 @@ def Zero_Shot_CloneTTS(voice, language, text):
 @app.get("/set_language/{language}/{username}")
 async def set_language(language: str, username: str):
 
-    language = user_setting[username]['language']
+    language = [username]['language']
     # Implement your logic to set the language for the user here
     return {"message": f"Language set to {language} for user {username}"}
 
