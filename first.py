@@ -27,20 +27,7 @@ def Zero_Shot_CloneTTS(voice, language, text):
 
 
 
-@app.post("/set_sample/{username}")
-async def set_sample(username: str, audio_file: UploadFile = File(...)):
-    # Save the audio sample file
-    voice_sample_path = f"/home/ubuntu/{username}.wav"
-    with open(voice_sample_path, "wb") as file:
-        file.write(await audio_file.read())
-
-    # Update the voice_samples dictionary
-    voice_samples[username] = voice_sample_path
-
-    return {"message": "Voice sample uploaded successfully"}
-
-
-@app.get("/set_language/{language}/{username}")
+@app.post("/set_language/{language}/{username}")
 async def set_language(language: str, username: str):
     # Check if the language is supported
     if language not in ["en", "fr-fr"]:
@@ -51,6 +38,18 @@ async def set_language(language: str, username: str):
 
     return {"message": f"Language set to {language} for user {username}"}
 
+
+@app.get("/set_sample/{username}")
+async def set_sample(username: str, audio_file: UploadFile = File(...)):
+    # Save the audio sample file
+    voice_sample_path = f"/home/ubuntu/{username}.wav"
+    with open(voice_sample_path, "wb") as file:
+        file.write(await audio_file.read())
+
+    # Update the voice_samples dictionary
+    voice_samples[username] = voice_sample_path
+
+    return {"message": "Voice sample uploaded successfully"}
 
 
 @app.get("/tts")
