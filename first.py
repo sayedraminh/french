@@ -25,6 +25,8 @@ class VoiceCloningRequest(BaseModel):
 def Zero_Shot_CloneTTS(voice, language, text):
     clone.tts_to_file(text=text, speaker_wav=voice, language=language, file_path="output.wav")
 
+
+
 @app.post("/set_sample/{username}")
 async def set_sample(username: str, audio_file: UploadFile = File(...)):
     # Save the audio sample file
@@ -61,11 +63,13 @@ async def generate_tts(text: str, username: str):
     voice_sample_path = voice_samples[username]
 
     cloned_audio_path = f"/home/ubuntu/{username}.wav"
-    Zero_Shot_CloneTTS(voice_sample_path, language="en", text=text)
+    language = voice_samples[username]  # Retrieve the language from voice_samples
+    Zero_Shot_CloneTTS(voice_sample_path, language=language, text=text)
     shutil.move("output.wav", cloned_audio_path)
 
     # Return the cloned audio file as a response
     return FileResponse(cloned_audio_path, media_type="audio/wav")
+
 
 
 if __name__ == "__main__":
