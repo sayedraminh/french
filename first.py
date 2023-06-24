@@ -27,11 +27,11 @@ def Zero_Shot_CloneTTS(voice, language, text):
 
 
 
-@app.get("/set_language/{lang}/{username}")
-async def set_language(lang: str, username: str):
-    user_settings[username] = user_settings.get(username, {})
-    user_settings[username][‘language’] = lang
-    return {“message”: f”Language set to {lang}“}
+
+@app.get("/set_language/{language}/{username}")
+async def set_language(language: str, username: str):
+    # Implement your logic to set the language for the user here
+    return {"message": f"Language set to {language} for user {username}"}
 
 
 @app.post("/set_sample/{username}")
@@ -49,11 +49,6 @@ async def set_sample(username: str, audio_file: UploadFile = File(...)):
 
 @app.get("/tts")
 async def generate_tts(text: str, username: str):
-
-    language = settings.get(‘language’)
-    if language is None:
-        return {“error”: “Language is not set. Please set the language using /set_language/{lang}“}
-    
     # Check if voice sample exists for the given username
     if username not in voice_samples:
         return {"error": f"No voice sample found for user {username}"}
