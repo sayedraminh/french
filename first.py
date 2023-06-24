@@ -64,11 +64,20 @@ async def generate_tts(text: str, username: str):
 
     cloned_audio_path = f"/home/ubuntu/{username}.wav"
     language = voice_samples[username]  # Retrieve the language from voice_samples
-    Zero_Shot_CloneTTS(voice_sample_path, language=language, text=text)
+
+    if language == "en":
+        language_code = "en"
+    elif language == "fr-fr":
+        language_code = "fr-fr"
+    else:
+        return {"error": f"Unsupported language: {language}"}
+
+    Zero_Shot_CloneTTS(voice_sample_path, language=language_code, text=text)
     shutil.move("output.wav", cloned_audio_path)
 
     # Return the cloned audio file as a response
     return FileResponse(cloned_audio_path, media_type="audio/wav")
+
 
 
 
