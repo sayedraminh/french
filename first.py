@@ -16,6 +16,7 @@ VC = TTS(model_name="voice_conversion_models/multilingual/vctk/freevc24", progre
 
 # Dictionary to store voice samples
 voice_samples = {}
+languages  = {}
 
 
 class VoiceCloningRequest(BaseModel):
@@ -35,7 +36,7 @@ async def set_language(language: str, username: str):
         return {"error": f"Unsupported language: {language}"}
 
     # Update the language for the user
-    voice_samples[username] = language
+    languages[username] = language
 
     return {"message": f"Language set to {language} for user {username}"}
 
@@ -62,7 +63,7 @@ async def generate_tts(text: str, username: str):
 
     # Perform voice cloning with the saved voice sample
     voice_sample_path = voice_samples[username]
-    language = voice_samples[username]
+    language = languages[username]
 
     cloned_audio_path = f"/home/ubuntu/{username}.wav"
     Zero_Shot_CloneTTS(voice_sample_path, language=language, text=text)
